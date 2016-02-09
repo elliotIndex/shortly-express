@@ -29,7 +29,7 @@ app.set('view engine', 'ejs');
 app.use(partials());
 // Parse JSON (uniform resource locators)
 app.use(bodyParser.json());
-// Parse forms (signup/login)
+// Parse forms (signup/login) 
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -114,11 +114,10 @@ app.post('/signup', function(req, res) {
   new User(userObject)
     .save()
     .then(function(user) {
-      res.render('index');
+      console.log('new user: ', userObject.username);
+      req.session.username = userObject.username;
+      res.redirect('/');
     });
-  // .then(function (hash) {
-  //   console.log(hash);
-  // });
 });
 
 app.get('/login', function(req, res) {
@@ -127,13 +126,10 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
-  // make sure they aren't already logged in
   var userObject = {
     username: req.body.username,
     password: req.body.password
   };
-
-  // var compareAsync = Promise.promisify(bcrypt.compare);
 
   new User({username: userObject.username})
   .fetch()
@@ -146,11 +142,11 @@ app.post('/login', function(req, res) {
   .then(function(passwordMatches) {
     console.log('passwordMatches: ', passwordMatches);
     req.session.username = userObject.username;
-    res.render('index');
+    res.redirect('/');
   })
   .catch(function(err) {
     console.log('Invalid username/password: ', err);
-    res.render('login');
+    res.redirect('/login');
   });
   // if username exists
     // check password?
