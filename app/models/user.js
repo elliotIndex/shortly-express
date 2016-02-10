@@ -19,7 +19,6 @@ var User = db.Model.extend({
     return this.hasMany(Link);
   },
   hashPassword: function (model, attrs, options) {
-    // util.makeHashPromise(model.attributes.password)
     return new Promise(function (resolve, reject) {
       bcrypt.hash(model.attributes.password, null, null, function (err, hash) {
         if (err) { reject(err); }
@@ -27,12 +26,6 @@ var User = db.Model.extend({
         resolve(hash);
       });
     });
-    // .then(function(hash) {
-    //   model.set('password', hash);
-    // })
-    // .catch(function(err) {
-    //   console.log('database error: ', err);
-    // });
   }
 });
 

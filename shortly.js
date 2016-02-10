@@ -1,12 +1,3 @@
-// TODO:
-// ability to log out
-// login, logout, signup buttons
-// enable sessions so user doesn't need to keep logging in
-// pass tests
-// only show links that belong to the specified user
-
-
-
 var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
@@ -35,8 +26,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static(__dirname + '/public'));
 
-// possible cookie/sessions stuff
-// app.use(express.cookieParser());
 app.use(sessions({
   secret: '123456789QWERTY',
   resave: false,
@@ -112,9 +101,9 @@ app.post('/signup', function(req, res) {
   .then(function(exists) {
     if (!exists) {
       var userObject = new User({
-          username: req.body.username,
-          password: req.body.password
-        });
+        username: req.body.username,
+        password: req.body.password
+      });
 
       userObject
         .save()
