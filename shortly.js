@@ -38,7 +38,9 @@ app.use(express.static(__dirname + '/public'));
 // possible cookie/sessions stuff
 // app.use(express.cookieParser());
 app.use(sessions({
-  secret: '123456789QWERTY'
+  secret: '123456789QWERTY',
+  resave: false,
+  saveUninitialized: true
 }));
 
 
@@ -105,23 +107,28 @@ app.get('/signup', function(req, res) {
 });
 
 app.post('/signup', function(req, res) {
+  new User({ username: req.body.username })
+  .fetch()
+  .then(function(exists) {
+    if (!exists) {
+      var userObject = new User({
+          username: req.body.username,
+          password: req.body.password
+        });
 
-  var userObject = {
-    username: req.body.username,
-    password: req.body.password
-  };
-
-  new User(userObject)
-    .save()
-    .then(function(user) {
-      console.log('new user: ', userObject.username);
-      req.session.username = userObject.username;
-      res.redirect('/');
-    });
+      userObject
+        .save()
+        .then(function(user) {
+          console.log('new user: ', user.get('username'));
+          util.startSession(req, res, user);
+        });
+    } else {
+      res.redirect('/login');
+    }
+  });
 });
 
 app.get('/login', function(req, res) {
-  // util.checkSession(req, res, 'login');
   res.render('login');
 });
 
@@ -158,7 +165,6 @@ app.post('/login', function(req, res) {
   // somewhere in the callback  req.session.user = req.username;
 });
 
-// function to checkUsername exists
 
 
 /************************************************************/
